@@ -1,0 +1,8 @@
+.idea
+.git
+scripts/producer/bin
+scripts/producer/include
+scripts/producer/lib
+scripts/producer/share
+scripts/producer/pyvenv.cfg
+coverage.out
