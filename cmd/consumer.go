@@ -19,7 +19,7 @@ import (
 
 func NewConsumerCMD() *cobra.Command {
 	CMDInstance := &cobra.Command{
-		Use:   "consumer",
+		Use:   "start",
 		Short: "start redis stream consumer",
 		Long:  `start redis stream consumer`,
 		RunE: func(cmd *cobra.Command, args []string) error {

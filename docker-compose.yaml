@@ -1,0 +1,95 @@
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rstream-consumer-1:
+    image: rstream-consumer-final:latest
+    ports:
+      - "8081:8080"
+    environment:
+      - PROCESSED_MESSAGES_STREAM_NAME=messages:processed
+      - SHUTDOWN_DEADLINE=1s
+      - CONSUMER_PUBLISHED_MESSAGES_STREAM_NAME=messages:published
+      - CONSUMER_CONSUMER_IDS_LIST_NAME=consumer:ids
+      - CONSUMER_GROUP_SIZE=5
+      - MONITORING_INTERVAL=1s
+      - REDIS_DB=0
+      - REDIS_ADDRESS=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  rstream-consumer-2:
+    image: rstream-consumer-final:latest
+    ports:
+      - "8082:8080"
+    environment:
+      - PROCESSED_MESSAGES_STREAM_NAME=messages:processed
+      - SHUTDOWN_DEADLINE=1s
+      - CONSUMER_PUBLISHED_MESSAGES_STREAM_NAME=messages:published
+      - CONSUMER_CONSUMER_IDS_LIST_NAME=consumer:ids
+      - CONSUMER_GROUP_SIZE=5
+      - MONITORING_INTERVAL=1s
+      - REDIS_DB=0
+      - REDIS_ADDRESS=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  rstream-consumer-3:
+    image: rstream-consumer-final:latest
+    ports:
+      - "8083:8080"
+    environment:
+      - PROCESSED_MESSAGES_STREAM_NAME=messages:processed
+      - SHUTDOWN_DEADLINE=1s
+      - CONSUMER_PUBLISHED_MESSAGES_STREAM_NAME=messages:published
+      - CONSUMER_CONSUMER_IDS_LIST_NAME=consumer:ids
+      - CONSUMER_GROUP_SIZE=5
+      - MONITORING_INTERVAL=1s
+      - REDIS_DB=0
+      - REDIS_ADDRESS=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  rstream-consumer-4:
+    image: rstream-consumer-final:latest
+    ports:
+      - "8084:8080"
+    environment:
+      - PROCESSED_MESSAGES_STREAM_NAME=messages:processed
+      - SHUTDOWN_DEADLINE=1s
+      - CONSUMER_PUBLISHED_MESSAGES_STREAM_NAME=messages:published
+      - CONSUMER_CONSUMER_IDS_LIST_NAME=consumer:ids
+      - CONSUMER_GROUP_SIZE=5
+      - MONITORING_INTERVAL=1s
+      - REDIS_DB=0
+      - REDIS_ADDRESS=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  rstream-consumer-5:
+    image: rstream-consumer-final:latest
+    ports:
+      - "8085:8080"
+    environment:
+      - PROCESSED_MESSAGES_STREAM_NAME=messages:processed
+      - SHUTDOWN_DEADLINE=1s
+      - CONSUMER_PUBLISHED_MESSAGES_STREAM_NAME=messages:published
+      - CONSUMER_CONSUMER_IDS_LIST_NAME=consumer:ids
+      - CONSUMER_GROUP_SIZE=5
+      - MONITORING_INTERVAL=1s
+      - REDIS_DB=0
+      - REDIS_ADDRESS=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy

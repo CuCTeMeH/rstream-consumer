@@ -26,6 +26,20 @@ func NewConfig() (*Config, error) {
 	viper.SetDefault("processed_messages_stream_name", "messages:processed")
 	viper.SetDefault("shutdown_deadline", "1s")
 
+	// Bind environment variables
+	viper.BindEnv("redis.address", "REDIS_ADDRESS")
+	viper.BindEnv("redis.password", "REDIS_PASSWORD")
+	viper.BindEnv("redis.db", "REDIS_DB")
+	viper.BindEnv("monitoring.interval", "MONITORING_INTERVAL")
+	viper.BindEnv("consumer.group_size", "CONSUMER_GROUP_SIZE")
+	viper.BindEnv("consumer.consumer_ids_list_name", "CONSUMER_IDS_LIST_NAME")
+	viper.BindEnv(
+		"consumer.published_messages_stream_name",
+		"CONSUMER_PUBLISHED_MESSAGES_STREAM_NAME",
+	)
+	viper.BindEnv("processed_messages_stream_name", "PROCESSED_MESSAGES_STREAM_NAME")
+	viper.BindEnv("shutdown_deadline", "SHUTDOWN_DEADLINE")
+
 	viper.AutomaticEnv()
 
 	var cfg Config
