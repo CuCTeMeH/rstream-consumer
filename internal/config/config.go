@@ -1,9 +1,10 @@
 package config
 
 import (
+	"time"
+
 	"github.com/palantir/stacktrace"
 	"github.com/spf13/viper"
-	"time"
 )
 
 type Config struct {
@@ -25,6 +26,7 @@ func NewConfig() (*Config, error) {
 	viper.SetDefault("consumer.published_messages_stream_name", "messages:published")
 	viper.SetDefault("processed_messages_stream_name", "messages:processed")
 	viper.SetDefault("shutdown_deadline", "1s")
+	viper.SetDefault("consumer.consumed_messages_set_name", "messages:processing")
 
 	// Bind environment variables
 	viper.BindEnv("redis.address", "REDIS_ADDRESS")
@@ -39,6 +41,10 @@ func NewConfig() (*Config, error) {
 	)
 	viper.BindEnv("processed_messages_stream_name", "PROCESSED_MESSAGES_STREAM_NAME")
 	viper.BindEnv("shutdown_deadline", "SHUTDOWN_DEADLINE")
+	viper.BindEnv(
+		"consumer.consumed_messages_set_name",
+		"CONSUMER_CONSUMED_MESSAGES_SET_NAME",
+	)
 
 	viper.AutomaticEnv()
 

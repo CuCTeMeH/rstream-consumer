@@ -2,10 +2,11 @@ package mocks
 
 import (
 	"context"
-	"github.com/cuctemeh/rstream-consumer/internal/storage"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/cuctemeh/rstream-consumer/internal/storage"
 )
 
 type MockRedisClient struct {

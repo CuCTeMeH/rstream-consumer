@@ -21,6 +21,7 @@ type RedisClient interface {
 	SAdd(ctx context.Context, key string, members ...interface{}) (int64, error)
 	SRem(ctx context.Context, key string, members ...interface{}) (int64, error)
 	SCard(ctx context.Context, key string) (int64, error)
+
 	Close() error
 }
 
@@ -43,12 +44,13 @@ func NewClient(cfg config.RedisConfig) (RedisClient, error) {
 	return &client{rdb}, nil
 }
 
-func (c *client) XRead(ctx context.Context, args *redis.XReadArgs) ([]redis.XStream, error) {
-	return c.Client.XRead(ctx, args).Result()
-}
 func (c *client) Subscribe(ctx context.Context, channel string) PubSub {
 	redisPubSub := c.Client.Subscribe(ctx, channel)
 	return &PubSubClient{redisPubSub}
+}
+
+func (c *client) XRead(ctx context.Context, args *redis.XReadArgs) ([]redis.XStream, error) {
+	return c.Client.XRead(ctx, args).Result()
 }
 
 func (c *client) SIsMember(ctx context.Context, set string, member interface{}) (bool, error) {

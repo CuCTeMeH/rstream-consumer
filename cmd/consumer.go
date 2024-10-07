@@ -2,19 +2,19 @@ package cmd
 
 import (
 	"context"
-	"github.com/cuctemeh/rstream-consumer/internal/shutdown"
-	"github.com/cuctemeh/rstream-consumer/internal/storage"
-	"github.com/sumup-oss/go-pkgs/task"
 	"log/slog"
 	"os"
 	"strconv"
 
 	"github.com/palantir/stacktrace"
 	"github.com/spf13/cobra"
+	"github.com/sumup-oss/go-pkgs/task"
 
 	"github.com/cuctemeh/rstream-consumer/internal/config"
 	"github.com/cuctemeh/rstream-consumer/internal/consumer"
 	"github.com/cuctemeh/rstream-consumer/internal/monitor"
+	"github.com/cuctemeh/rstream-consumer/internal/shutdown"
+	"github.com/cuctemeh/rstream-consumer/internal/storage"
 )
 
 func NewConsumerCMD() *cobra.Command {
@@ -72,12 +72,15 @@ func NewConsumerCMD() *cobra.Command {
 				consumerID,
 			)
 
-			mon := monitor.NewMonitor(
+			mon, err := monitor.NewMonitor(
 				cfg.Monitoring,
 				redisClient,
 				cfg.ProcessedMessagesStreamName,
 				loggerInstance,
 			)
+			if err != nil {
+				return stacktrace.Propagate(err, "failed to create monitor instance")
+			}
 
 			pubsub := redisClient.Subscribe(ctx, cfg.Consumer.PublishedMessagesStreamName)
 			defer pubsub.Close()

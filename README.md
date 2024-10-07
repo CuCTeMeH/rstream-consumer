@@ -14,8 +14,8 @@
 
 ## Features
 
-- **Message Consumption**: Efficiently consume messages from Redis streams.
-- **Monitoring**: Monitor message processing with detailed logs.
+- **Message Consumption**: Efficiently consume messages from Redis streams using Redis sets to make sure only one instance of the application processes a message.
+- **Monitoring**: Monitor messages processing per second.
 - **Graceful Shutdown**: Handle shutdown signals gracefully.
 - **Configurable**: Easily configurable via environment variables or configuration files.
 - **Testing**: Comprehensive test coverage.
@@ -49,8 +49,8 @@ go run main.go start
 ```
 The application starts consuming messages from the Redis pubsub and publishes them into a Redis Stream. The application can be stopped by sending a `SIGINT` or `SIGTERM` signal.
 
-In order to publish a predefined set of messages to the Redis pubsub you need to setup your python environment first and run the following code:
-```python ./scripts/publish.py```
+In order to publish a predefined set of messages to the Redis pubsub you need to setup your python environment first, install all the requirements from `./scripts/producer/requirements.txt` and run the following code:
+```python ./scripts/producer/server.py```
 
 ### Building the Application
 

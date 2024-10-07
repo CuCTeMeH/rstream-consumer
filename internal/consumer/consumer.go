@@ -5,11 +5,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/cuctemeh/rstream-consumer/internal/config"
-	"github.com/palantir/stacktrace"
-	"github.com/redis/go-redis/v9"
 	"log/slog"
 
+	"github.com/palantir/stacktrace"
+	"github.com/redis/go-redis/v9"
+
+	"github.com/cuctemeh/rstream-consumer/internal/config"
 	"github.com/cuctemeh/rstream-consumer/internal/storage"
 )
 
@@ -17,6 +18,7 @@ type Consumer struct {
 	publishedMessagesStreamName string
 	processedMessagesStreamName string
 	consumerID                  string
+	consumedMessagesSetName     string
 	redisClient                 storage.RedisClient
 	pubsub                      storage.PubSub
 	logger                      *slog.Logger
@@ -33,6 +35,7 @@ func NewRedisStreamConsumer(
 	return &Consumer{
 		publishedMessagesStreamName: cfg.PublishedMessagesStreamName,
 		processedMessagesStreamName: processedMessagesStreamName,
+		consumedMessagesSetName:     cfg.ConsumedMessagesSetName,
 		consumerID:                  consumerID,
 		redisClient:                 redisClient,
 		pubsub:                      pubsub,
@@ -82,7 +85,7 @@ func (c *Consumer) processMessage(ctx context.Context, msg string, consumerID st
 	message.ConsumerID = consumerID
 
 	// Check if the message has already been consumed
-	isMember, err := c.redisClient.SIsMember(ctx, "consumed_messages", message.MessageID)
+	isMember, err := c.redisClient.SIsMember(ctx, c.consumedMessagesSetName, message.MessageID)
 	if err != nil {
 		return stacktrace.Propagate(err, "failed to check if message has been consumed")
 	}
@@ -92,14 +95,14 @@ func (c *Consumer) processMessage(ctx context.Context, msg string, consumerID st
 	}
 
 	// The message has not been consumed, so add it to the set of consumed messages
-	_, err = c.redisClient.SAdd(ctx, "consumed_messages", message.MessageID)
+	_, err = c.redisClient.SAdd(ctx, c.consumedMessagesSetName, message.MessageID)
 	if err != nil {
 		return stacktrace.Propagate(err, "failed to add message to set of consumed messages")
 	}
 
 	// cleanup - remove message from set of consumed messages once processed
 	defer func(ctx context.Context, messageID string) {
-		_, errSRem := c.redisClient.SRem(ctx, "consumed_messages", messageID)
+		_, errSRem := c.redisClient.SRem(ctx, c.consumedMessagesSetName, messageID)
 		if errSRem != nil {
 			c.logger.InfoContext(
 				ctx,
@@ -133,10 +136,5 @@ func (c *Consumer) processMessage(ctx context.Context, msg string, consumerID st
 		return stacktrace.Propagate(err, "failed to store message data in Redis stream")
 	}
 
-	c.logger.InfoContext(
-		ctx,
-		"message processed",
-		"message_id", message.MessageID,
-	)
 	return nil
 }

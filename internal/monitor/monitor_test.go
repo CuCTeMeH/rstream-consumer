@@ -2,16 +2,17 @@ package monitor_test
 
 import (
 	"context"
+	"log/slog"
+	"os"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/cuctemeh/rstream-consumer/internal/config"
 	"github.com/cuctemeh/rstream-consumer/internal/monitor"
 	"github.com/cuctemeh/rstream-consumer/internal/testing/mocks"
-	"github.com/stretchr/testify/mock"
-	"log/slog"
-	"os"
 )
 
 func TestMonitor_Run(t *testing.T) {
@@ -22,8 +23,15 @@ func TestMonitor_Run(t *testing.T) {
 		Interval: 1 * time.Second,
 	}
 
-	monitorInstance := monitor.NewMonitor(cfg, mockRedisClient, "processed_messages_stream", logger)
-
+	monitorInstance, err := monitor.NewMonitor(
+		cfg,
+		mockRedisClient,
+		"processed_messages_stream",
+		logger,
+	)
+	if err != nil {
+		t.Fatalf("failed to create monitor instance: %v", err)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

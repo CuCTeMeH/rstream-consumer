@@ -3,17 +3,18 @@ package consumer_test
 import (
 	"context"
 	"encoding/json"
-	"github.com/cuctemeh/rstream-consumer/internal/testing/mocks"
-	"github.com/redis/go-redis/v9"
-	"github.com/stretchr/testify/mock"
+	"log/slog"
+	"os"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/redis/go-redis/v9"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/cuctemeh/rstream-consumer/internal/config"
 	"github.com/cuctemeh/rstream-consumer/internal/consumer"
-	"log/slog"
-	"os"
+	"github.com/cuctemeh/rstream-consumer/internal/testing/mocks"
 )
 
 func TestConsumer_Run_Success(t *testing.T) {
@@ -22,15 +23,15 @@ func TestConsumer_Run_Success(t *testing.T) {
 	ConsumerIDInt := os.Getpid()
 	consumerID := strconv.Itoa(ConsumerIDInt)
 
-	mockDB.On("SAdd", mock.Anything, "consumed_messages", []interface{}{"1"}).Return(
+	mockDB.On("SAdd", mock.Anything, "messages:processing", []interface{}{"1"}).Return(
 		int64(1),
 		nil,
 	)
-	mockDB.On("SRem", mock.Anything, "consumed_messages", []interface{}{"1"}).Return(
+	mockDB.On("SRem", mock.Anything, "messages:processing", []interface{}{"1"}).Return(
 		int64(1),
 		nil,
 	)
-	mockDB.On("SIsMember", mock.Anything, "consumed_messages", "1").Return(false, nil)
+	mockDB.On("SIsMember", mock.Anything, "messages:processing", "1").Return(false, nil)
 	mockDB.On("XAdd", mock.Anything, mock.Anything).Return("1", nil)
 
 	exampleMsg := &consumer.Message{
@@ -79,15 +80,15 @@ func TestConsumer_Run_E2E(t *testing.T) {
 	ConsumerIDInt := os.Getpid()
 	consumerID := strconv.Itoa(ConsumerIDInt)
 
-	mockDB.On("SAdd", mock.Anything, "consumed_messages", []interface{}{"1"}).Return(
+	mockDB.On("SAdd", mock.Anything, "messages:processing", []interface{}{"1"}).Return(
 		int64(1),
 		nil,
 	)
-	mockDB.On("SRem", mock.Anything, "consumed_messages", []interface{}{"1"}).Return(
+	mockDB.On("SRem", mock.Anything, "messages:processing", []interface{}{"1"}).Return(
 		int64(1),
 		nil,
 	)
-	mockDB.On("SIsMember", mock.Anything, "consumed_messages", "1").Return(false, nil)
+	mockDB.On("SIsMember", mock.Anything, "messages:processing", "1").Return(false, nil)
 	mockDB.On("XAdd", mock.Anything, mock.Anything).Return("1", nil)
 
 	exampleMsg := &consumer.Message{

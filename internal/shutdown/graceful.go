@@ -2,11 +2,12 @@ package shutdown
 
 import (
 	"context"
-	"github.com/palantir/stacktrace"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/palantir/stacktrace"
 )
 
 type ShutdownHandler struct {
