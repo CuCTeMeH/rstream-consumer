@@ -4,7 +4,7 @@
 packages=$(go list ./... | grep -v 'github.com/cuctemeh/rstream-consumer/internal/testing/mocks' | grep -v 'github.com/cuctemeh/rstream-consumer/internal/shutdown' | grep -v 'github.com/cuctemeh/rstream-consumer/internal/storage' | grep -v 'github.com/cuctemeh/rstream-consumer/internal/config' | grep -v 'github.com/cuctemeh/rstream-consumer/cmd')
 
 # Run tests and generate coverage profile, including only the specified packages
-go test -coverprofile=cover.out -coverpkg=$(echo $packages | tr ' ' ',') ./...
+go test -race -coverprofile=cover.out -coverpkg=$(echo $packages | tr ' ' ',') ./...
 
 # Extract the total coverage percentage
 coverage=$(go tool cover -func=cover.out | grep total | awk '{print $3}')

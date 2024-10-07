@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/palantir/stacktrace"
+
 	"github.com/cuctemeh/rstream-consumer/internal/config"
 	"github.com/cuctemeh/rstream-consumer/internal/storage"
 )
@@ -22,14 +24,18 @@ func NewMonitor(
 	redisClient storage.RedisClient,
 	processMessagesStreamName string,
 	logger *slog.Logger,
-) *Monitor {
+) (*Monitor, error) {
+	if cfg.Interval < time.Second {
+		return nil, stacktrace.NewError("interval should be greater than 1 second")
+	}
+
 	return &Monitor{
 		Interval:                  cfg.Interval,
 		redisClient:               redisClient,
 		processMessagesStreamName: processMessagesStreamName,
 		logger:                    logger,
 		lastCount:                 0,
-	}
+	}, nil
 }
 
 func (m *Monitor) Run(ctx context.Context) error {
@@ -45,13 +51,15 @@ func (m *Monitor) Run(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
+
 			messagesProcessed := count - m.lastCount
+			msgsPerSecond := float64(messagesProcessed) / m.Interval.Seconds()
 			m.lastCount = count
 
 			m.logger.Info(
-				"messages processed",
+				"messages processed per second",
 				"message_count",
-				messagesProcessed,
+				msgsPerSecond,
 				"interval",
 				m.Interval,
 			)
