@@ -4,11 +4,8 @@ name: goreleaser
 on:
   # NOTE: Allow manual triggering via UI
   workflow_dispatch:
-  pull_request:
-  push:
-    # run only against tags
-    tags:
-      - "*"
+  release:
+    types: [published]
 
 permissions:
   contents: write
